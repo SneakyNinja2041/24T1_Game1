@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        isHaunting = true;
+        isHaunting = false;
     }
 
     private void Update()
@@ -79,20 +79,25 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Haunt"))
+        if (isHaunting == false)
         {
-            Debug.Log("Collision with hauntable!");
-
-            if (isHaunting == false && Input.GetKeyDown("e"))
+            if (other.CompareTag("Haunt"))
             {
-                //set the collider objects position to the player's
-                //make the object a child of the player
-                isHaunting = true;
-                collisionBox.isTrigger = false;
-                rb.gravityScale = 2f;
-            }
+                Debug.Log("Collision with hauntable!");
 
+                if (Input.GetKeyDown("e"))
+                {
+                    Debug.Log("Pressed Haunt Button!");
+                    //set the collider objects position to the player's
+                    //make the object a child of the player
+                    isHaunting = true;
+                    collisionBox.isTrigger = false;
+                    rb.gravityScale = 2f;
+                }
+
+            }
         }
+     
     }
 
     private bool IsGrounded()
