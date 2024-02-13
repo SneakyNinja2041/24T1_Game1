@@ -17,7 +17,7 @@ public class Key : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             Debug.Log("Change Key Colour!");
-            material.color = Color.red;
+            material.color = new Color(0.849f, 0.715f, 0.205f);
         }
     }
 

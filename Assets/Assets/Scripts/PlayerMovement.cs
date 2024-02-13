@@ -18,6 +18,8 @@ public class PlayerMovement : MonoBehaviour
 
     public bool isHaunting;
 
+    
+
     private void Start()
     {
         isHaunting = false;
