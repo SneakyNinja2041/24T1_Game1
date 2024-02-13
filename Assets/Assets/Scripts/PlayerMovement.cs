@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;
-    public float jumpPower = 15f;
+    public float jumpPower = 5f;
     private float horizontal;
 
     [SerializeField] private LayerMask groundLayer;
@@ -17,12 +18,15 @@ public class PlayerMovement : MonoBehaviour
     public BoxCollider2D collisionBox;
 
     public bool isHaunting;
+    public bool isOverHaunt;
 
-    
+    public Transform itemToHaunt;
+    public GameObject itemToGrab;
 
     private void Start()
     {
         isHaunting = false;
+        isOverHaunt = false;
     }
 
     private void Update()
@@ -31,6 +35,12 @@ public class PlayerMovement : MonoBehaviour
         {
             movement.x = Input.GetAxisRaw("Horizontal");
             movement.y = Input.GetAxisRaw("Vertical");
+
+            if (isOverHaunt == true && Input.GetKeyDown("e"))
+            {
+                SwapState2();
+            }
+
         }
   
         if(isHaunting == true)
@@ -59,19 +69,13 @@ public class PlayerMovement : MonoBehaviour
 
             if (Input.GetKeyDown("e"))
             {
-                SwapState();
+                SwapState1();
             }
         }
     }
 
-    private void FixedUpdate()
-    {
 
-
-
-    }
-
-    void SwapState()
+    void SwapState1()
     {        
             //detatch the child object from the player
             isHaunting = false;
@@ -79,26 +83,30 @@ public class PlayerMovement : MonoBehaviour
             rb.gravityScale = 0f;
     }
 
+    void SwapState2()
+    {
+        Debug.Log("Pressed Haunt Button!");
+        //set the collider objects position to the player's
+        //make the object a child of the player
+        isHaunting = true;
+        collisionBox.isTrigger = false;
+        rb.gravityScale = 2f;
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (isHaunting == false)
-        {
+        
+        
             if (other.CompareTag("Haunt"))
             {
                 Debug.Log("Collision with hauntable!");
-
-                if (Input.GetKeyDown("e"))
-                {
-                    Debug.Log("Pressed Haunt Button!");
-                    //set the collider objects position to the player's
-                    //make the object a child of the player
-                    isHaunting = true;
-                    collisionBox.isTrigger = false;
-                    rb.gravityScale = 2f;
-                }
-
+                isOverHaunt = true;
             }
-        }
+            else
+            {
+                isOverHaunt = false;
+            }
+        
      
     }
 
