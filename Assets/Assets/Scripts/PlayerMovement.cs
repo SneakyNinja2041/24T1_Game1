@@ -16,12 +16,17 @@ public class PlayerMovement : MonoBehaviour
     Vector2 movement;
 
     public BoxCollider2D collisionBox;
+    public TrailRenderer trail;
+    public SpriteRenderer playerSprite;
 
     public bool isHaunting;
     public bool isOverHaunt;
 
-    public Transform itemToHaunt;
     public GameObject itemToGrab;
+    public GameObject itemHold;
+
+    Key keyColour;
+    Block blockColour;
 
     private void Start()
     {
@@ -36,8 +41,9 @@ public class PlayerMovement : MonoBehaviour
             movement.x = Input.GetAxisRaw("Horizontal");
             movement.y = Input.GetAxisRaw("Vertical");
 
-            if (isOverHaunt == true && Input.GetKeyDown("e"))
+            if (isOverHaunt == true && Input.GetKeyDown(KeyCode.Q))
             {
+
                 SwapState2();
             }
 
@@ -46,10 +52,14 @@ public class PlayerMovement : MonoBehaviour
         if(isHaunting == true)
         {
             rb.velocity = new Vector2(horizontal * moveSpeed, rb.velocity.y);
+            trail.enabled = false;
+            playerSprite.color = new Color(1, 1, 1, 0.15f);
         }
         if (isHaunting == false)
         {
             rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+            trail.enabled = true;
+            playerSprite.color = new Color(1, 1, 1, 1);
         }
 
         if (isHaunting == true)
@@ -76,38 +86,65 @@ public class PlayerMovement : MonoBehaviour
 
 
     void SwapState1()
-    {        
-            //detatch the child object from the player
-            isHaunting = false;
-            collisionBox.isTrigger = true;
-            rb.gravityScale = 0f;
+    {
+        itemToGrab.GetComponent<Rigidbody2D>().simulated = true;
+        itemToGrab.transform.parent = null;
+        // Audio for detach
+
+        isHaunting = false;
+        collisionBox.isTrigger = true;
+        rb.gravityScale = 0f;
     }
 
     void SwapState2()
     {
-        Debug.Log("Pressed Haunt Button!");
-        //set the collider objects position to the player's
-        //make the object a child of the player
+        itemToGrab.GetComponent<Rigidbody2D>().simulated = false;
+        itemToGrab.transform.position = itemHold.transform.position;
+        itemToGrab.transform.parent = itemHold.transform;
+
+        if(itemToGrab.tag == "Haunt")
+        {
+            itemToGrab.GetComponent<Block>().Colour();
+            
+        }
+        if(itemToGrab.tag == "Key")
+        {
+            itemToGrab.GetComponent<Key>().Colour();
+            
+        }
+
         isHaunting = true;
         collisionBox.isTrigger = false;
         rb.gravityScale = 2f;
+        Debug.Log("Pressed Haunt Button!");
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (other.CompareTag("Key"))
+        {
+            isOverHaunt = true;
+            itemToGrab = other.gameObject;
+        }
         
-        
-            if (other.CompareTag("Haunt"))
-            {
-                Debug.Log("Collision with hauntable!");
-                isOverHaunt = true;
-            }
-            else
-            {
-                isOverHaunt = false;
-            }
-        
-     
+        if (other.CompareTag("Haunt"))
+        {
+            Debug.Log("Collision with hauntable!");
+            isOverHaunt = true;
+            itemToGrab = other.gameObject;
+        }   
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Haunt"))
+        {
+            isOverHaunt = false;  
+        }
+        if (other.CompareTag("Key"))
+        {
+            isOverHaunt = false;
+        }
     }
 
     private bool IsGrounded()

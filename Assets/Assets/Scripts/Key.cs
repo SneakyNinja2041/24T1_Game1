@@ -6,19 +6,17 @@ public class Key : MonoBehaviour
 {
     public Material material;
 
+
     private void Start()
     {
         material.color = Color.white;
     }
 
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
+    public void Colour()
+    {        
             Debug.Log("Change Key Colour!");
-            material.color = new Color(0.849f, 0.715f, 0.205f);
-        }
+            material.color = new Color(0.849f, 0.715f, 0.205f);                              
     }
 
 
